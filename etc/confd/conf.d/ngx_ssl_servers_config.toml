@@ -1,0 +1,7 @@
+[template]
+src = "ssl_servers.conf.tmpl"
+dest = "/etc/nginx/conf.d/ssl_servers.conf"
+keys = [
+    "/ngx_entry/ssl_upstream",
+    "/ngx_entry/ssl_servers",
+]

@@ -1,0 +1,56 @@
+{{$https_enable := getv "/ngx_entry/ssl_upstream/enabled" "false"}}
+{{if eq $https_enable "true"}}
+	upstream ssl_proxies {
+	{{range getvs "/ngx_entry/ssl_upstream/servers/*"}}      
+		server {{.}};    
+	{{end}}
+	}
+	{{range $server := lsdir "/ngx_entry/ssl_servers/" -}}
+	{{$server_name := printf "/ngx_entry/ssl_servers/%s/server_name" $server }}
+	{{$listen_port := printf "/ngx_entry/ssl_servers/%s/listen_port" $server }}
+	{{$ssl_certificate := printf "/ngx_entry/ssl_servers/%s/ssl_certificate" $server }}
+	{{$ssl_certificate_key := printf "/ngx_entry/ssl_servers/%s/ssl_certificate_key" $server }}
+	{{$ssl_session_timeout := printf "/ngx_entry/ssl_servers/%s/ssl_session_timeout" $server }}
+	{{$ssl_session_cache := printf "/ngx_entry/ssl_servers/%s/ssl_session_cache" $server }}
+	{{$ssl_protocols := printf "/ngx_entry/ssl_servers/%s/ssl_protocols" $server }}
+	{{$ssl_ciphers := printf "/ngx_entry/ssl_servers/%s/ssl_ciphers" $server }}
+	{{$ssl_prefer_server_ciphers := printf "/ngx_entry/ssl_servers/%s/ssl_prefer_server_ciphers" $server }}
+	{{$location_paths := printf "/ngx_entry/ssl_servers/%s/location_paths" $server }}
+	server {
+		listen		*:{{getv $listen_port}} ssl;
+		server_name	{{getv $server_name}};
+		
+		ssl_certificate                 {{getv $ssl_certificate}};
+		ssl_certificate_key             {{getv $ssl_certificate_key}};
+		ssl_session_timeout             {{getv $ssl_session_timeout}};
+		ssl_session_cache               {{getv $ssl_session_cache}};
+		ssl_protocols                   {{getv $ssl_protocols}};
+		ssl_ciphers                     {{getv $ssl_ciphers}};
+		ssl_prefer_server_ciphers       {{getv $ssl_prefer_server_ciphers}};
+			
+		client_max_body_size  200m;
+		client_body_buffer_size 10m;
+		add_header 'Access-Control-Allow-Origin' '*';
+		add_header 'Access-Control-Allow-Credentials' 'true';
+		add_header 'Access-Control-Allow-Headers' 'Content-Type,Accept,accessTicket, appid, sign';
+		add_header 'Access-Control-Allow-Methods' 'GET';
+		add_header 'Access-Control-Allow-Methods' 'POST';
+		add_header 'Access-Control-Allow-Methods' "OPTIONS"; 
+
+		if ($request_method = OPTIONS ) {
+			return 200;
+		}
+			
+		{{range $location_path := lsdir $location_paths -}}
+		{{$location := printf "%s/%s/location" $location_paths $location_path }}
+		{{$host := printf "%s/%s/host" $location_paths $location_path }}
+		{{$proxy_redirect := printf "%s/%s/proxy_redirect" $location_paths $location_path }}
+		location {{getv $location}} {
+				proxy_pass        https://ssl_proxies;
+				proxy_redirect   {{getv $proxy_redirect}};
+				proxy_set_header Host {{getv $host}};
+		}
+		{{end}}
+	}
+	{{end}}
+{{end}}

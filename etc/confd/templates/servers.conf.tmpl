@@ -1,0 +1,41 @@
+{{$http_enable := getv "/ngx_entry/upstream/enabled" "false"}}
+{{if eq $http_enable "true"}}
+	upstream app_proxies {
+	{{range getvs "/ngx_entry/upstream/servers/*"}}
+		server {{.}};
+	{{end}}
+	}
+	{{range $server := lsdir "/ngx_entry/servers/" -}}
+	{{$server_name := printf "/ngx_entry/servers/%s/server_name" $server }}
+	{{$listen_port := printf "/ngx_entry/servers/%s/listen_port" $server }}
+	{{$location_paths := printf "/ngx_entry/servers/%s/location_paths" $server }}
+	server {
+		listen		 {{getv $listen_port}};
+		server_name      {{getv $server_name}};
+			
+		client_max_body_size  200m;
+		client_body_buffer_size 10m;
+		add_header 'Access-Control-Allow-Origin' '*';
+		add_header 'Access-Control-Allow-Credentials' 'true';
+		add_header 'Access-Control-Allow-Headers' 'Content-Type,Accept,accessTicket, appid, sign';
+		add_header 'Access-Control-Allow-Methods' 'GET';
+		add_header 'Access-Control-Allow-Methods' 'POST';
+		add_header 'Access-Control-Allow-Methods' "OPTIONS"; 
+
+		if ($request_method = OPTIONS ) {
+			return 200;
+		}
+			
+		{{range $location_path := lsdir $location_paths -}}
+		{{$location := printf "%s/%s/location" $location_paths $location_path }}
+		{{$host := printf "%s/%s/host" $location_paths $location_path }}
+		{{$proxy_redirect := printf "%s/%s/proxy_redirect" $location_paths $location_path }}
+		location {{getv $location}} {
+				proxy_pass        https://app_proxies;
+				proxy_redirect   {{getv $proxy_redirect}};
+				proxy_set_header Host {{getv $host}};
+		}
+		{{end}}
+	}
+	{{end}}
+{{end}}

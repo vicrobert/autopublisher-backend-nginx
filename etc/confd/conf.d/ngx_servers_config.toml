@@ -1,0 +1,7 @@
+[template]
+src = "servers.conf.tmpl"
+dest = "/etc/nginx/conf.d/servers.conf"
+keys = [
+    "/ngx_entry/upstream",
+    "/ngx_entry/servers",
+]
