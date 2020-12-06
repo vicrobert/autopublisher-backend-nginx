@@ -6,7 +6,7 @@
 ```
 # git clone https://github.com/vicrobert/autopublisher-backend-nginx.git  
 # cd autopublisher-backend-nginx && docker build -t autopublisher-backend-nginx .  
-# docker run -e CONFIG_BACKEND=redis -e CONFIG_BACKEND_ENDPOINT=X.X.X.X:6379 -e CONFIG_BACKEND_INTERVAL=5 -d -p 8080:80 autopublisher-backend-nginx  
+# docker run -e DATABASE_TYPE=redis -e DATABASE_ENDPOINT=X.X.X.X:6379 -e DATABASE_PROBE_INTERVAL=5 -d -p 8080:80 autopublisher-backend-nginx  
 ```
 ## 二、数据库键-值结构说明
 ```
