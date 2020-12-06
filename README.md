@@ -8,6 +8,7 @@
 3.docker run -e CONFIG_BACKEND=redis -e CONFIG_BACKEND_ENDPOINT=X.X.X.X:6379 -e CONFIG_BACKEND_INTERVAL=5 -d -p 8080:80 autopublisher-backend-nginx  
 
 ## 二、数据库键-值结构说明
+···
 /ngx_entry  
 |__ /upstream                                  ## http代理  
 |   |__ /enabled : "true" or "false"  
@@ -20,3 +21,4 @@
 |       |__ /listen_port : "8080"  
 |       |__ /location_paths  
 |           |__ /path1                         ##任意不重复key名  
+···
