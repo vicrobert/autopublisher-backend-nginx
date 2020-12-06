@@ -37,6 +37,6 @@ redis-cli set /ngx_entry/ssl_servers/server2/location_paths/1/host "wh_app1.whsm
 redis-cli set /ngx_entry/ssl_servers/server2/location_paths/1/proxy_redirect off
 
 redis-cli set /ngx_entry/ssl_servers/server2/location_paths/2/location "/operationmgr"
-redis-cli set /ngx_entry/ssl_servers/server2/location_paths/2/host "operationmgr.scity.cn"
+redis-cli set /ngx_entry/ssl_servers/server2/location_paths/2/host "wh_operationmgr.scity.cn"
 redis-cli set /ngx_entry/ssl_servers/server2/location_paths/2/proxy_redirect off
 
