@@ -1,4 +1,4 @@
-# autopublisher-backend-nginx  
+# servicepublisher-backend-nginx  
 
 整合confd后的nginx，能通过etcd、redis等数据库动态更新nginx.conf。  
   
